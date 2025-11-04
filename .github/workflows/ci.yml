@@ -46,7 +46,7 @@ jobs:
 
       - name: Update GitOps repo with new image tag
         run: |
-          git config --global user.email "bot@example.com"
+          git config --global user.email "funniest.ms@gmail.com"
           git config --global user.name "CI Bot"
 
           git clone ${{ secrets.GITOPS_REPO }} gitops
