@@ -43,6 +43,13 @@ jobs:
           docker build -t ${{ secrets.ECR_REGISTRY }}/hackathon:$IMAGE_TAG .
           docker push ${{ secrets.ECR_REGISTRY }}/hackathon:$IMAGE_TAG
           echo "image_tag=$IMAGE_TAG" >> $GITHUB_OUTPUT
+      
+      - name: Set up SSH key for GitOps access
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.GITOPS_SSH_KEY }}" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+          ssh-keyscan github.com >> ~/.ssh/known_hosts
 
       - name: Update GitOps repo with new image tag
         run: |
