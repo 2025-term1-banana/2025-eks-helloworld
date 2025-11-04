@@ -40,8 +40,8 @@ jobs:
         id: build-image
         run: |
           IMAGE_TAG=$(date +%Y%m%d%H%M%S)
-          docker build -t ${{ secrets.ECR_REGISTRY }}/flask-hello:$IMAGE_TAG .
-          docker push ${{ secrets.ECR_REGISTRY }}/flask-hello:$IMAGE_TAG
+          docker build -t ${{ secrets.ECR_REGISTRY }}/hackathon:$IMAGE_TAG .
+          docker push ${{ secrets.ECR_REGISTRY }}/hackathon:$IMAGE_TAG
           echo "image_tag=$IMAGE_TAG" >> $GITHUB_OUTPUT
 
       - name: Update GitOps repo with new image tag
@@ -52,7 +52,7 @@ jobs:
           git clone ${{ secrets.GITOPS_REPO }} gitops
           cd gitops
 
-          sed -i "s#image: .*#image: ${{ secrets.ECR_REGISTRY }}/flask-hello:${{ steps.build-image.outputs.image_tag }}#g" ${{ secrets.GITOPS_DEPLOY_PATH }}
+          sed -i "s#image: .*#image: ${{ secrets.ECR_REGISTRY }}/hackathon:${{ steps.build-image.outputs.image_tag }}#g" ${{ secrets.GITOPS_DEPLOY_PATH }}
 
           git add .
           git commit -m "Update image to ${{ steps.build-image.outputs.image_tag }}"
