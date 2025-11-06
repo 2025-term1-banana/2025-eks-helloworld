@@ -56,34 +56,34 @@ jobs:
           sudo wget https://github.com/mikefarah/yq/releases/latest/download/yq_linux_amd64 -O /usr/bin/yq
           sudo chmod +x /usr/bin/yq
 
-      - name: Update GitOps repo with new image tag
+            - name: Update GitOps repo with new image tag
         run: |
+          set -e
           git config --global user.email "funniest.ms@gmail.com"
           git config --global user.name "CI Bot"
 
           git clone ${{ secrets.GITOPS_REPO }} gitops
           cd gitops
-
           git checkout canary
 
-          yq e -i '.spec.template.spec.containers[0].image = env(NEW_IMAGE)' "$FILE_PATH"
-
-          # yq를 사용하여 Rollout YAML의 정확한 이미지 경로를 수정
-          # NEW_IMAGE는 '624577703989.dkr.ecr.ap-northeast-1.amazonaws.com/hackathon:20251107003000' 형식이 됩니다.
+          # 변수 선언은 반드시 yq 실행 전!
+          ECR_REGISTRY="${{ secrets.ECR_REGISTRY }}"
           NEW_IMAGE="$ECR_REGISTRY/hackathon:${{ steps.build-image.outputs.image_tag }}"
-          FILE_PATH="base/rollout.yaml" # 예: manifests/01-rollout.yaml
+          FILE_PATH="base/rollout.yaml"
 
           echo "Updating $FILE_PATH to image $NEW_IMAGE"
-          
-          # yq (expression, in-place, file)
-          # 'spec.template.spec.containers[0].image' 경로를 찾아 새 이미지 값으로 변경
+
+          # 실제 파일 존재 여부 확인
+          ls -al "$FILE_PATH" || (echo "❌ File not found: $FILE_PATH" && exit 1)
+
+          # 이미지 업데이트
           yq e -i '.spec.template.spec.containers[0].image = env(NEW_IMAGE)' "$FILE_PATH"
 
-          # 변경 사항이 있을 때만 커밋 및 푸시
+          # 변경사항 있을 때만 커밋/푸시
           if ! git diff --quiet "$FILE_PATH"; then
             git add "$FILE_PATH"
             git commit -m "Update image to hackathon:${{ steps.build-image.outputs.image_tag }}"
-            git push
+            git push origin canary
           else
             echo "No image change detected. Skipping commit."
           fi
