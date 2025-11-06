@@ -68,10 +68,12 @@ jobs:
 
           # 변수 선언은 반드시 yq 실행 전!
           ECR_REGISTRY="${{ secrets.ECR_REGISTRY }}"
-          NEW_IMAGE="$ECR_REGISTRY/hackathon:${{ steps.build-image.outputs.image_tag }}"
+          export NEW_IMAGE="$ECR_REGISTRY/hackathon:${{ steps.build-image.outputs.image_tag }}"
           FILE_PATH="base/rollout.yaml"
 
           echo "Updating $FILE_PATH to image $NEW_IMAGE"
+
+          ls -al "$FILE_PATH" || (echo "❌ File not found: $FILE_PATH" && exit 1)
 
           # 실제 파일 존재 여부 확인
           ls -al "$FILE_PATH" || (echo "❌ File not found: $FILE_PATH" && exit 1)
