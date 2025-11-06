@@ -51,6 +51,11 @@ jobs:
           chmod 600 ~/.ssh/id_rsa
           ssh-keyscan github.com >> ~/.ssh/known_hosts
 
+      - name: Install yq
+        run: |
+          sudo wget https://github.com/mikefarah/yq/releases/latest/download/yq_linux_amd64 -O /usr/bin/yq
+          sudo chmod +x /usr/bin/yq
+
       - name: Update GitOps repo with new image tag
         run: |
           git config --global user.email "funniest.ms@gmail.com"
@@ -59,8 +64,24 @@ jobs:
           git clone ${{ secrets.GITOPS_REPO }} gitops
           cd gitops
 
-          sed -i "s#image: .*#image: ${{ secrets.ECR_REGISTRY }}/hackathon:${{ steps.build-image.outputs.image_tag }}#g" ${{ secrets.GITOPS_DEPLOY_PATH }}
+          yq e -i '.spec.template.spec.containers[0].image = env(NEW_IMAGE)' "$FILE_PATH"
 
-          git add .
-          git commit -m "Update image to ${{ steps.build-image.outputs.image_tag }}"
-          git push
+          # yq를 사용하여 Rollout YAML의 정확한 이미지 경로를 수정
+          # NEW_IMAGE는 '624577703989.dkr.ecr.ap-northeast-1.amazonaws.com/hackathon:20251107003000' 형식이 됩니다.
+          NEW_IMAGE="$ECR_REGISTRY/hackathon:${{ steps.build-image.outputs.image_tag }}"
+          FILE_PATH="base/rollout.yaml" # 예: manifests/01-rollout.yaml
+
+          echo "Updating $FILE_PATH to image $NEW_IMAGE"
+          
+          # yq (expression, in-place, file)
+          # 'spec.template.spec.containers[0].image' 경로를 찾아 새 이미지 값으로 변경
+          yq e -i '.spec.template.spec.containers[0].image = env(NEW_IMAGE)' "$FILE_PATH"
+
+          # 변경 사항이 있을 때만 커밋 및 푸시
+          if ! git diff --quiet "$FILE_PATH"; then
+            git add "$FILE_PATH"
+            git commit -m "Update image to hackathon:${{ steps.build-image.outputs.image_tag }}"
+            git push
+          else
+            echo "No image change detected. Skipping commit."
+          fi
