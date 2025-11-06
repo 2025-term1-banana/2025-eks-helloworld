@@ -4,7 +4,7 @@ app = Flask(__name__)
 
 @app.route('/')
 def hello():
-    return "Hello, Kubernetes World - beta test"
+    return "Hello, Kubernetes World - canary test!"
 
 @app.route("/healthz")
 def healthz():
