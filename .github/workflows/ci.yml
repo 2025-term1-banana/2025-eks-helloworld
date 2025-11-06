@@ -57,6 +57,8 @@ jobs:
           sudo chmod +x /usr/bin/yq
 
             - name: Update GitOps repo with new image tag
+
+      - name: Update GitOps repo with new image tag
         run: |
           set -e
           git config --global user.email "funniest.ms@gmail.com"
