@@ -64,6 +64,8 @@ jobs:
           git clone ${{ secrets.GITOPS_REPO }} gitops
           cd gitops
 
+          git checkout canary
+
           yq e -i '.spec.template.spec.containers[0].image = env(NEW_IMAGE)' "$FILE_PATH"
 
           # yq를 사용하여 Rollout YAML의 정확한 이미지 경로를 수정
@@ -79,7 +81,6 @@ jobs:
 
           # 변경 사항이 있을 때만 커밋 및 푸시
           if ! git diff --quiet "$FILE_PATH"; then
-            git checkout canary
             git add "$FILE_PATH"
             git commit -m "Update image to hackathon:${{ steps.build-image.outputs.image_tag }}"
             git push
