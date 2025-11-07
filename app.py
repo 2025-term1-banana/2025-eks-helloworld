@@ -1,4 +1,6 @@
 from flask import Flask, jsonify
+
+from psycopg2 import connect
 from json import loads
 from os import getenv
 from sys import stderr
@@ -27,11 +29,22 @@ def get_secret():
 @app.route("/")
 def hello():
     secret = get_secret()
-    flask_value = "not set"
+    version = "not set"
     if secret is not None:
-        print(secret, file=stderr)
-        flask_value = secret[list(secret.keys())[0]]
-    return f"Hello, Kubernetes World - New Version! {flask_value}"
+        # print(secret, file=stderr)
+        conn = connect(
+            host=secret["host"],
+            port=secret["port"],
+            dbname=secret["dbname"],
+            user=secret["username"],
+            password=secret["password"],
+        )
+        cur = conn.cursor()
+        cur.execute("SELECT version();")
+        version = cur.fetchone()[0]
+        cur.close()
+        conn.close()
+    return f"Hello, Kubernetes World - New Version! {version}"
 
 
 @app.route("/healthz")
