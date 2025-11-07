@@ -17,7 +17,7 @@ def get_secret():
     try:
         get_secret_value_response = client.get_secret_value(SecretId=secret_name)
     except ClientError as e:
-        raise e
+        return None
 
     secret: str = get_secret_value_response["SecretString"]
     return loads(secret)
@@ -26,7 +26,9 @@ def get_secret():
 @app.route("/")
 def hello():
     secret = get_secret()
-    flask_value = secret["flask"]
+    flask_value = "not set"
+    if secret is not None:
+        flask_value = secret["flask"]
     return f"Hello, Kubernetes World - New Version! (rollback!!!) {flask_value}"
 
 
