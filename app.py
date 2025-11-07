@@ -4,7 +4,7 @@ app = Flask(__name__)
 
 @app.route('/')
 def hello():
-    return "Hello, Kubernetes World - New Version! (before rollback)"
+    return "Hello, Kubernetes World - New Version! (after newest)"
 
 @app.route("/healthz")
 def healthz():
