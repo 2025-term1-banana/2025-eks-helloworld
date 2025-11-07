@@ -26,7 +26,8 @@ def get_secret():
 @app.route("/")
 def hello():
     secret = get_secret()
-    return f"Hello, Kubernetes World - New Version! (rollback!!!) {secret["flask"]}"
+    flask_value = secret["flask"]
+    return f"Hello, Kubernetes World - New Version! (rollback!!!) {flask_value}"
 
 
 @app.route("/healthz")
