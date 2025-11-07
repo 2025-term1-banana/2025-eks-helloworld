@@ -29,6 +29,15 @@ def get_secret():
 @app.route("/")
 def hello():
     secret = get_secret()
+    info = "not set"
+    if secret is not None:
+        info = secret["host"]
+    return f"Hello, Kubernetes World - New Version! {info}"
+
+
+@app.route("/db")
+def db_test():
+    secret = get_secret()
     version = "not set"
     if secret is not None:
         # print(secret, file=stderr)
@@ -44,7 +53,7 @@ def hello():
         version = cur.fetchone()[0]
         cur.close()
         conn.close()
-    return f"Hello, Kubernetes World - New Version! {version}"
+    return f"Hello, Postgresql Version : {version}"
 
 
 @app.route("/healthz")
