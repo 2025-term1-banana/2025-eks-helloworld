@@ -40,7 +40,7 @@ def hello():
             password=secret["password"],
         )
         cur = conn.cursor()
-        cur.execute("SELECT version();")
+        cur.execute("show server_version;")
         version = cur.fetchone()[0]
         cur.close()
         conn.close()
