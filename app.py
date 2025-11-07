@@ -1,6 +1,7 @@
 from flask import Flask, jsonify
 from json import loads
 from os import getenv
+from sys import stderr
 import boto3
 from botocore.exceptions import ClientError
 
@@ -28,8 +29,8 @@ def hello():
     secret = get_secret()
     flask_value = "not set"
     if secret is not None:
-        print(secret)
-        flask_value = secret[secret.keys()[0]]
+        print(secret, file=stderr)
+        flask_value = secret[list(secret.keys())[0]]
     return f"Hello, Kubernetes World - New Version! {flask_value}"
 
 
