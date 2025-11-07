@@ -29,7 +29,7 @@ def hello():
     flask_value = "not set"
     if secret is not None:
         flask_value = secret["flask"]
-    return f"Hello, Kubernetes World - New Version! (rollback!!!) {flask_value}"
+    return f"Hello, Kubernetes World - New Version! {flask_value}"
 
 
 @app.route("/healthz")
