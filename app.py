@@ -59,5 +59,10 @@ def health():
     return jsonify(version=getenv("APP_VERSION", "unknown"))
 
 
+@app.route("/version")
+def version():
+    return jsonify(version=getenv("APP_VERSION", "unknown"))
+
+
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000)

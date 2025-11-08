@@ -22,6 +22,6 @@ def test_db(client):
 
 
 def test_version(client):
-    response = client.get("/health")
+    response = client.get("/version")
     assert response.status_code == 200
     assert b"version" in response.data
