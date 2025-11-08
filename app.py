@@ -41,18 +41,17 @@ def db_test():
     version = "not set"
     if secret is not None:
         # print(secret, file=stderr)
-        conn = connect(
+        with connect(
             host=secret["host"],
             port=secret["port"],
             dbname=secret["dbname"],
             user=secret["username"],
             password=secret["password"],
-        )
-        cur = conn.cursor()
-        cur.execute("show server_version;")
-        version = cur.fetchone()[0]
-        cur.close()
-        conn.close()
+        ) as conn:
+            cur = conn.cursor()
+            cur.execute("show server_version;")
+            version = cur.fetchone()[0]
+            cur.close()
     return f"Hello, Postgresql Version : {version}"
 
 
