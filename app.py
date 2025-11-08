@@ -32,7 +32,7 @@ def hello():
     info = "not set"
     if secret is not None:
         info = secret["host"]
-    return f"Hello World - 25.11.08 16:58 Version! {info}"
+    return f"Hello World - 25.11.08 20:57 Version! {info}"
 
 
 @app.route("/db")
@@ -40,7 +40,6 @@ def db_test():
     secret = get_secret()
     version = "not set"
     if secret is not None:
-        # print(secret, file=stderr)
         with connect(
             host=secret["host"],
             port=secret["port"],
