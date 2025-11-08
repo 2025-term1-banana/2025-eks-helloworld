@@ -49,7 +49,7 @@ def db_test():
             password=secret["password"],
         ) as conn:
             cur = conn.cursor()
-            cur.execute("show server_version;")
+            cur.execute("select version();")
             version = cur.fetchone()[0]
             cur.close()
     return f"Hello, Postgresql Version : {version}"
