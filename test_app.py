@@ -19,3 +19,9 @@ def test_db(client):
     response = client.get("/db")
     assert response.status_code == 200
     assert b"not set" in response.data
+
+
+def test_version(client):
+    response = client.get("/health")
+    assert response.status_code == 200
+    assert b"version" in response.data
