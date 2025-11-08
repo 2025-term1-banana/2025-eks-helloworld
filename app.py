@@ -32,7 +32,7 @@ def hello():
     info = "not set"
     if secret is not None:
         info = secret["host"]
-    return f"Hello, Kubernetes World - New Version! {info}"
+    return f"Hello World - 25.10.08 16:15 Version! {info}"
 
 
 @app.route("/db")
