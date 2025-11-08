@@ -52,7 +52,7 @@ def db_test():
             cur.execute("select version();")
             version = cur.fetchone()[0]
             cur.close()
-    return f"Hello, Postgresql Version : {version}"
+    return f"Hello, Postgresql : {version}"
 
 
 @app.route("/health")
