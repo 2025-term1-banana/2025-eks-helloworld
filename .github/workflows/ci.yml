@@ -1,8 +1,8 @@
 name: CI/CD
 
 on:
-  push:
-    branches: [ main, canary ]
+  pull_request:
+    branches: [main, canary]
 
 jobs:
   build-and-deploy:
@@ -20,72 +20,6 @@ jobs:
       - name: Install dependencies
         run: |
           pip install flake8
-          pip install -r requirements.txt
 
-      #- name: Lint
-      #  run: flake8 app.py
-
-      - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v4
-        with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: ${{ secrets.AWS_REGION }}
-
-      - name: Login to Amazon ECR
-        id: login-ecr
-        uses: aws-actions/amazon-ecr-login@v2
-
-      - name: Build, tag, and push image
-        id: build-image
-        run: |
-          IMAGE_TAG=$(date +%Y%m%d%H%M%S)
-          docker build -t ${{ secrets.ECR_REGISTRY }}/hackathon:$IMAGE_TAG .
-          docker push ${{ secrets.ECR_REGISTRY }}/hackathon:$IMAGE_TAG
-          echo "image_tag=$IMAGE_TAG" >> $GITHUB_OUTPUT
-      
-      - name: Set up SSH key for GitOps access
-        run: |
-          mkdir -p ~/.ssh
-          echo "${{ secrets.GITOPS_SSH_KEY }}" > ~/.ssh/id_rsa
-          chmod 600 ~/.ssh/id_rsa
-          ssh-keyscan github.com >> ~/.ssh/known_hosts
-
-      - name: Install yq
-        run: |
-          sudo wget https://github.com/mikefarah/yq/releases/latest/download/yq_linux_amd64 -O /usr/bin/yq
-          sudo chmod +x /usr/bin/yq
-
-      - name: Update GitOps repo with new image tag
-        run: |
-          set -e
-          git config --global user.email "funniest.ms@gmail.com"
-          git config --global user.name "CI Bot"
-
-          git clone ${{ secrets.GITOPS_REPO }} gitops
-          cd gitops
-          git checkout canary
-
-          # 변수 선언은 반드시 yq 실행 전!
-          ECR_REGISTRY="${{ secrets.ECR_REGISTRY }}"
-          export NEW_IMAGE="$ECR_REGISTRY/hackathon:${{ steps.build-image.outputs.image_tag }}"
-          FILE_PATH="base/rollout.yaml"
-
-          echo "Updating $FILE_PATH to image $NEW_IMAGE"
-
-          ls -al "$FILE_PATH" || (echo "❌ File not found: $FILE_PATH" && exit 1)
-
-          # 실제 파일 존재 여부 확인
-          ls -al "$FILE_PATH" || (echo "❌ File not found: $FILE_PATH" && exit 1)
-
-          # 이미지 업데이트
-          yq e -i '.spec.template.spec.containers[0].image = env(NEW_IMAGE)' "$FILE_PATH"
-
-          # 변경사항 있을 때만 커밋/푸시
-          if ! git diff --quiet "$FILE_PATH"; then
-            git add "$FILE_PATH"
-            git commit -m "Update image to hackathon:${{ steps.build-image.outputs.image_tag }}"
-            git push origin canary
-          else
-            echo "No image change detected. Skipping commit."
-          fi
+      - name: Lint
+        run: flake8 app.py
