@@ -55,8 +55,8 @@ def db_test():
     return f"Hello, Postgresql Version : {version}"
 
 
-@app.route("/healthz")
-def healthz():
+@app.route("/health")
+def health():
     return jsonify(version=getenv("APP_VERSION", "unknown"))
 
 
