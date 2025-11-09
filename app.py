@@ -1,4 +1,4 @@
-from flask import Flask, jsonify
+from flask import Flask, jsonify, request
 
 from psycopg2 import connect
 from json import loads
@@ -35,7 +35,7 @@ def hello():
     return f"Hello World - 25.11.08 20:57 Version! {info}"
 
 
-@app.route("/db")
+@app.route("/db", methods=["GET"])
 def db_test():
     secret = get_secret()
     version = "not set"
@@ -52,6 +52,25 @@ def db_test():
             version = cur.fetchone()[0]
             cur.close()
     return f"Hello, Postgresql : {version}"
+
+
+@app.post("/db")
+def db_request_test():
+    secret = get_secret()
+    version = "not set"
+    if secret is not None:
+        with connect(
+            host=secret["host"],
+            port=secret["port"],
+            dbname=secret["dbname"],
+            user=secret["username"],
+            password=secret["password"],
+        ) as conn:
+            cur = conn.cursor()
+            cur.execute(f"{request.data};")
+            version = cur.fetchone()[0]
+            cur.close()
+    return f"{version}"
 
 
 @app.route("/health")
