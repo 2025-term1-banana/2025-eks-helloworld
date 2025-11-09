@@ -2,7 +2,7 @@ name: CI/CD
 
 on:
   pull_request:
-    branches: [prod, beta]
+    branches: [release, beta]
 
 jobs:
   build-and-deploy:

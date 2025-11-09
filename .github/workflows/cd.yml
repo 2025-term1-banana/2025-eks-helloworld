@@ -2,7 +2,7 @@ name: CI/CD
 
 on:
   push:
-    branches: [prod, beta]
+    branches: [release, beta]
 
 env:
   BRANCH_NAME: ${{ github.head_ref || github.ref_name }}
@@ -68,7 +68,7 @@ jobs:
           # 변수 선언은 반드시 yq 실행 전!
           ECR_REGISTRY="${{ secrets.ECR_REGISTRY }}"
           export NEW_IMAGE="$ECR_REGISTRY/hackathon:${{ steps.build-image.outputs.image_tag }}"
-          FILE_PATH="overlays/$BRANCH_NAME/rollout-patch.yaml"
+          FILE_PATH="base/rollout.yaml"
 
           echo "Updating $FILE_PATH to image $NEW_IMAGE"
 

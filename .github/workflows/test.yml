@@ -2,9 +2,9 @@ name: Run Flask Tests
 
 on:
   push:
-    branches: ["beta", "prod"]
+    branches: ["release", "beta"]
   pull_request:
-    branches: ["beta", "prod"]
+    branches: ["release", "beta"]
 
 jobs:
   test:
