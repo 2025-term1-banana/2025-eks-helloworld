@@ -3,23 +3,22 @@ from flask import Flask, jsonify, request
 from psycopg2 import connect
 from json import loads
 from os import getenv
-from sys import stderr
 import boto3
-from botocore.exceptions import ClientError
 
 app = Flask(__name__)
 
 
 def get_secret():
-    secret_name = "prod/hackaton/db"
-    region_name = "ap-northeast-1"
+    secret = "prod/hackaton/db"
+    region = "ap-northeast-1"
 
     session = boto3.session.Session()
-    client = session.client(service_name="secretsmanager", region_name=region_name)
+    client = session.client(service_name="secretsmanager", region_name=region)
 
     try:
-        get_secret_value_response = client.get_secret_value(SecretId=secret_name)
-    except:
+        get_secret_value_response = client.get_secret_value(SecretId=secret)
+    except Exception as e:
+        print(f"Unable to retrieve secret: {e}")
         return None
 
     secret: str = get_secret_value_response["SecretString"]
@@ -32,7 +31,7 @@ def hello():
     info = "not set"
     if secret is not None:
         info = secret["host"]
-    return f"Hello World - 25.11.08 20:57 Version! {info}"
+    return f"Hello World - 25.11.09 14:00 Version! {info}"
 
 
 @app.route("/db", methods=["GET"])
@@ -76,7 +75,7 @@ def db_request_test():
 
 @app.route("/health")
 def health():
-    return jsonify(version=getenv("APP_VERSION", "unknown"))
+    return jsonify(version=getenv("APP_HEALTH", "unknown"))
 
 
 @app.route("/version")
