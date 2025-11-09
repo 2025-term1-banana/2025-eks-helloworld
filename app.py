@@ -67,7 +67,8 @@ def db_request_test():
             password=secret["password"],
         ) as conn:
             cur = conn.cursor()
-            cur.execute(f"{str(request.data)};")
+            query = request.data.decode("utf-8")
+            cur.execute(f"{query};")
             version = cur.fetchone()[0]
             cur.close()
     return f"{version}"
