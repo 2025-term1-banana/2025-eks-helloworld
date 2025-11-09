@@ -81,7 +81,7 @@ def health():
 
 @app.route("/version")
 def version():
-    return jsonify(version=getenv("APP_VERSION", "unknown"))
+    return jsonify(version=getenv("APP_VERSION2", "unknown"))
 
 
 if __name__ == "__main__":
