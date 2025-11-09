@@ -76,7 +76,7 @@ def db_request_test():
 
 @app.route("/health")
 def health():
-    return jsonify(version=getenv("APP_HEALTH", "unknown"))
+    return jsonify(version=getenv("APP_HEALTH2", "unknown"))
 
 
 @app.route("/version")
