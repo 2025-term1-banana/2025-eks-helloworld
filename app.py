@@ -3,9 +3,7 @@ from flask import Flask, jsonify, request
 from psycopg2 import connect
 from json import loads
 from os import getenv
-from sys import stderr
 import boto3
-from botocore.exceptions import ClientError
 
 app = Flask(__name__)
 
@@ -19,7 +17,8 @@ def get_secret():
 
     try:
         get_secret_value_response = client.get_secret_value(SecretId=secret)
-    except:
+    except Exception as e:
+        print(f"Unable to retrieve secret: {e}")
         return None
 
     secret: str = get_secret_value_response["SecretString"]
