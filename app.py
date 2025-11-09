@@ -32,7 +32,7 @@ def hello():
     info = "not set"
     if secret is not None:
         info = secret["host"]
-    return f"Hello World - 25.11.08 20:57 Version! {info}"
+    return f"Hello World - 25.11.09 14:00 Version! {info}"
 
 
 @app.route("/db", methods=["GET"])
